@@ -156,7 +156,7 @@
 
 		<main>
 			<div class="container py-xl">
-				<!-- Hero Banner -->
+				<!-- Hero Banner with Stats -->
 				<div
 					class="dashboard-banner"
 					style="
@@ -166,22 +166,30 @@
 						position: relative;
 						border-radius: 16px;
 						overflow: hidden;
-						min-height: 280px;
+						min-height: 350px;
 						height: auto;
 						display: flex;
-						align-items: center;
+						flex-direction: column;
+						justify-content: space-between;
 						background-attachment: scroll;
 						background-size: cover;
 						background-position: center center;
+						padding: 2rem;
 					"
 				>
-					<div class="banner-content" style="position: relative; z-index: 1">
-						<div class="banner-left">
+					<div class="banner-content" style="position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: flex-start;">
+						<div class="banner-left" style="display: flex; gap: 1.5rem; align-items: center;">
 							<div
 								class="user-avatar-large"
 								style="
 									background: rgba(255, 255, 255, 0.2);
 									border: 3px solid white;
+									width: 80px;
+									height: 80px;
+									border-radius: 50%;
+									display: flex;
+									align-items: center;
+									justify-content: center;
 								"
 							>
 								<svg
@@ -189,6 +197,7 @@
 									fill="none"
 									stroke="white"
 									stroke-width="2"
+									style="width: 40px; height: 40px;"
 								>
 									<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
 									<circle cx="12" cy="7" r="4"></circle>
@@ -200,6 +209,8 @@
 									style="
 										color: white;
 										text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+										font-size: 2rem;
+										margin: 0 0 0.5rem 0;
 									"
 								>
 									Welcome back, <span id="bannerUserName">Student</span>!
@@ -209,6 +220,8 @@
 									style="
 										color: rgba(255, 255, 255, 0.95);
 										text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+										font-size: 1.1rem;
+										margin: 0;
 									"
 								>
 									Here's what's happening with your job search today
@@ -222,6 +235,14 @@
 								background: white;
 								color: #00bcd4;
 								box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+								padding: 0.75rem 1.5rem;
+								border-radius: 8px;
+								font-weight: 600;
+								border: none;
+								cursor: pointer;
+								display: flex;
+								align-items: center;
+								gap: 0.5rem;
 							"
 						>
 							<svg
@@ -230,6 +251,7 @@
 								fill="none"
 								stroke="currentColor"
 								stroke-width="2"
+								style="width: 18px; height: 18px;"
 							>
 								<path
 									d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"
@@ -238,78 +260,24 @@
 							Edit Profile
 						</button>
 					</div>
-				</div>
-
-				<!-- Stats Grid -->
-				<div class="stats-grid">
-					<div class="stat-card stat-card-blue">
-						<div class="stat-icon-wrapper">
-							<svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-								<path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-								<path
-									fill-rule="evenodd"
-									d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z"
-									clip-rule="evenodd"
-								/>
-							</svg>
+					
+					<!-- Inline Stats -->
+					<div style="position: relative; z-index: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 2rem;">
+						<div style="background: rgba(255, 255, 255, 0.95); padding: 1.5rem; border-radius: 12px; text-align: center;">
+							<div style="font-size: 2rem; font-weight: 700; color: #3b82f6; margin-bottom: 0.5rem;" id="profileViewsCount">0</div>
+							<div style="color: #64748b; font-size: 0.875rem; font-weight: 500;">Profile Views</div>
 						</div>
-						<div class="stat-info">
-							<div class="stat-value">127</div>
-							<div class="stat-label">Profile Views</div>
+						<div style="background: rgba(255, 255, 255, 0.95); padding: 1.5rem; border-radius: 12px; text-align: center;">
+							<div style="font-size: 2rem; font-weight: 700; color: #10b981; margin-bottom: 0.5rem;" id="applicationsCount">0</div>
+							<div style="color: #64748b; font-size: 0.875rem; font-weight: 500;">Applications</div>
 						</div>
-					</div>
-
-					<div class="stat-card stat-card-green">
-						<div class="stat-icon-wrapper">
-							<svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-								<path
-									fill-rule="evenodd"
-									d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625zM7.5 15a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 017.5 15zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H8.25z"
-									clip-rule="evenodd"
-								/>
-								<path
-									d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z"
-								/>
-							</svg>
+						<div style="background: rgba(255, 255, 255, 0.95); padding: 1.5rem; border-radius: 12px; text-align: center;">
+							<div style="font-size: 2rem; font-weight: 700; color: #f59e0b; margin-bottom: 0.5rem;" id="savedJobsCount">0</div>
+							<div style="color: #64748b; font-size: 0.875rem; font-weight: 500;">Saved Jobs</div>
 						</div>
-						<div class="stat-info">
-							<div class="stat-value">8</div>
-							<div class="stat-label">Applications</div>
-						</div>
-					</div>
-
-					<div class="stat-card stat-card-orange">
-						<div class="stat-icon-wrapper">
-							<svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-								<path
-									fill-rule="evenodd"
-									d="M6.32 2.577a49.255 49.255 0 0111.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 01-1.085.67L12 18.089l-7.165 3.583A.75.75 0 013.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93z"
-									clip-rule="evenodd"
-								/>
-							</svg>
-						</div>
-						<div class="stat-info">
-							<div class="stat-value">15</div>
-							<div class="stat-label">Saved Jobs</div>
-						</div>
-					</div>
-
-					<div class="stat-card stat-card-purple">
-						<div class="stat-icon-wrapper">
-							<svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-								<path
-									d="M12.75 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM7.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM8.25 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM9.75 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM10.5 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12.75 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM14.25 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 13.5a.75.75 0 100-1.5.75.75 0 000 1.5z"
-								/>
-								<path
-									fill-rule="evenodd"
-									d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z"
-									clip-rule="evenodd"
-								/>
-							</svg>
-						</div>
-						<div class="stat-info">
-							<div class="stat-value">3</div>
-							<div class="stat-label">Interviews</div>
+						<div style="background: rgba(255, 255, 255, 0.95); padding: 1.5rem; border-radius: 12px; text-align: center;">
+							<div style="font-size: 2rem; font-weight: 700; color: #8b5cf6; margin-bottom: 0.5rem;" id="interviewsCount">0</div>
+							<div style="color: #64748b; font-size: 0.875rem; font-weight: 500;">Interviews</div>
 						</div>
 					</div>
 				</div>

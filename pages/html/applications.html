@@ -747,54 +747,74 @@
 
 			// Withdraw application
 			function withdrawApplication(applicantId) {
-				if (confirm('Are you sure you want to withdraw this application?')) {
-					const currentUser = JSON.parse(
-						localStorage.getItem('currentUser') || '{}'
-					);
-					const studentId =
-						currentUser.userid || currentUser.userId || currentUser.id;
-
-					const studentApplicationsKey = `studentApplications_${studentId}`;
-					let studentApplications = JSON.parse(
-						localStorage.getItem(studentApplicationsKey) || '[]'
-					);
-
-					// Find the application to remove
-					const appToRemove = studentApplications.find(
-						(app) => app.applicantId === applicantId
-					);
-					if (appToRemove) {
-						// Also remove from company's applications
-						const companyKey = `applications_${appToRemove.companyId}`;
-						let companyApps = JSON.parse(
-							localStorage.getItem(companyKey) || '[]'
+				window.notify.confirm(
+					'Bạn có chắc chắn muốn rút đơn ứng tuyển này?',
+					'Xác nhận rút đơn',
+					{
+						confirmText: 'Rút đơn',
+						cancelText: 'Hủy',
+						confirmType: 'danger'
+					}
+				).then((confirmed) => {
+					if (confirmed) {
+						const currentUser = JSON.parse(
+							localStorage.getItem('currentUser') || '{}'
 						);
-						companyApps = companyApps.filter(
+						const studentId =
+							currentUser.userid || currentUser.userId || currentUser.id;
+
+						const studentApplicationsKey = `studentApplications_${studentId}`;
+						let studentApplications = JSON.parse(
+							localStorage.getItem(studentApplicationsKey) || '[]'
+						);
+
+						// Find the application to remove
+						const appToRemove = studentApplications.find(
+							(app) => app.applicantId === applicantId
+						);
+						if (appToRemove) {
+							// Also remove from company's applications
+							const companyKey = `applications_${appToRemove.companyId}`;
+							let companyApps = JSON.parse(
+								localStorage.getItem(companyKey) || '[]'
+							);
+							companyApps = companyApps.filter(
+								(app) => app.applicantId !== applicantId
+							);
+							localStorage.setItem(companyKey, JSON.stringify(companyApps));
+						}
+
+						studentApplications = studentApplications.filter(
 							(app) => app.applicantId !== applicantId
 						);
-						localStorage.setItem(companyKey, JSON.stringify(companyApps));
+						localStorage.setItem(
+							studentApplicationsKey,
+							JSON.stringify(studentApplications)
+						);
+
+						window.notify.success('Đã rút đơn ứng tuyển!');
+						setTimeout(() => {
+							loadApplications(); // Reload
+						}, 1000);
 					}
-
-					studentApplications = studentApplications.filter(
-						(app) => app.applicantId !== applicantId
-					);
-					localStorage.setItem(
-						studentApplicationsKey,
-						JSON.stringify(studentApplications)
-					);
-
-					window.notify.success('Đã rút đơn ứng tuyển!');
-					setTimeout(() => {
-						loadApplications(); // Reload
-					}, 1000);
-				}
+				});
 			}
 
 			// Open job detail modal
 			function openJobDetailModal(jobId) {
+				console.log('Opening job detail for jobId:', jobId);
+				console.log('All jobs data:', allJobsData);
+				
+				// Ensure jobs are loaded
+				if (!allJobsData || allJobsData.length === 0) {
+					window.notify.warning('Đang tải dữ liệu công việc, vui lòng thử lại sau giây lát!');
+					return;
+				}
+				
 				const job = allJobsData.find((j) => j.id == jobId);
 				if (!job) {
 					console.error('Job not found:', jobId);
+					window.notify.error('Không tìm thấy thông tin công việc này!');
 					return;
 				}
 
@@ -896,6 +916,11 @@
 				} else if (typeof job.description === 'string') {
 					descriptionHTML = `<p style="color: #546E7A; line-height: 1.6; margin: 0 0 1rem 0;">${job.description}</p>`;
 				}
+				
+				// Fallback if no description
+				if (!descriptionHTML) {
+					descriptionHTML = '<p style="color: #546E7A; line-height: 1.6;">No description available.</p>';
+				}
 
 				const postedAt = job.postedAt
 					? new Date(job.postedAt).toLocaleDateString()
@@ -956,32 +981,6 @@
           <div style="margin-bottom: 2rem;">
             <h3 style="color: #263238; margin: 0 0 1rem 0;">About the role</h3>
             ${descriptionHTML}
-          
-          <!-- Divider -->
-          <hr style="border: none; border-top: 1px solid #E0E0E0; margin: 2rem 0;" />
-          
-          <!-- Description -->
-          <div style="margin-bottom: 2rem;">
-            <h3 style="color: #263238; margin: 0 0 1rem 0;">About the role</h3>
-            <p style="color: #546E7A; line-height: 1.6; margin: 0 0 1rem 0;">${description}</p>
-            
-            ${
-							requirements
-								? `
-              <h4 style="color: #263238; margin: 1rem 0 0.5rem 0;">Requirements</h4>
-              <p style="margin: 0 0 1rem 0; color: #546E7A; line-height: 1.6;">${requirements}</p>
-            `
-								: ''
-						}
-            
-            ${
-							benefits
-								? `
-              <h4 style="color: #263238; margin: 1rem 0 0.5rem 0;">Benefits</h4>
-              <p style="margin: 0 0 1rem 0; color: #546E7A; line-height: 1.6;">${benefits}</p>
-            `
-								: ''
-						}
           </div>
           
           <!-- Additional Info -->

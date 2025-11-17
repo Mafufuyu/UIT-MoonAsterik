@@ -166,7 +166,7 @@ function loadDashboardStats() {
 	const savedJobs = JSON.parse(localStorage.getItem(savedJobsKey) || '[]');
 	const savedJobsCount = savedJobs.length;
 
-	// Update UI
+	// Update UI - both old stat cards and new banner stats
 	const statCards = document.querySelectorAll('.stat-card');
 	if (statCards.length >= 4) {
 		// Profile Views
@@ -181,6 +181,17 @@ function loadDashboardStats() {
 		// Interviews
 		statCards[3].querySelector('.stat-value').textContent = interviewCount;
 	}
+	
+	// Update banner inline stats
+	const profileViewsCount = document.getElementById('profileViewsCount');
+	const applicationsCountEl = document.getElementById('applicationsCount');
+	const savedJobsCountEl = document.getElementById('savedJobsCount');
+	const interviewsCountEl = document.getElementById('interviewsCount');
+	
+	if (profileViewsCount) profileViewsCount.textContent = profileViews;
+	if (applicationsCountEl) applicationsCountEl.textContent = applicationCount;
+	if (savedJobsCountEl) savedJobsCountEl.textContent = savedJobsCount;
+	if (interviewsCountEl) interviewsCountEl.textContent = interviewCount;
 }
 
 // Load user info into navbar
