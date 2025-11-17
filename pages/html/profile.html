@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Moon* - My Profile</title>
+  <link rel="stylesheet" href="../../styles/main.css" />
+  <link rel="stylesheet" href="../../styles/index.css" />
+  <link rel="stylesheet" href="../../styles/profile-styles.css" />
+  <link rel="stylesheet" href="../../styles/profile.css" />
+</head>
+<body>
+  <!-- Dashboard Navbar -->
+  <nav class="simple-navbar" style="background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 100;">
+    <div class="container">
+      <a href="../../index.html" class="navbar-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+          <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+        </svg>
+        <span class="navbar-logo-text">Moon<span class="asterisk">*</span></span>
+      </a>
+      
+      <div class="navbar-center" id="navbarMenu">
+        <a href="student-dashboard.html" class="navbar-link">Dashboard</a>
+        <a href="profile.html" class="navbar-link" style="color: #00BCD4; font-weight: 600;">Profile</a>
+        <a href="jobs.html" class="navbar-link">Jobs</a>
+        <a href="applications.html" class="navbar-link">My Applications</a>
+      </div>
+      
+      <div class="navbar-actions">
+        <button class="btn btn-primary navbar-logout-btn" onclick="logout()">
+          Logout
+        </button>
+      </div>
+      
+      <button class="mobile-toggle" id="mobileToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container py-xl">
+      <div class="profile-header" style="margin-bottom: 2rem;">
+        <h2 style="margin: 0 0 0.5rem 0;">My Profile</h2>
+        <p class="text-gray">Manage your professional information and visibility settings</p>
+      </div>
+
+      <!-- Profile Visibility Settings -->
+      <div class="card mb-lg">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 class="card-title">Profile Visibility</h3>
+          <div class="visibility-status">
+            <span class="badge badge-success">Public Profile</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="visibility-options" style="display: flex; flex-direction: column; gap: 1rem;">
+            <label class="radio-option" style="display: flex; gap: 1rem; padding: 1rem; border: 2px solid #E0E0E0; border-radius: 8px; cursor: pointer;">
+              <input type="radio" name="visibility" value="public" checked />
+              <div class="radio-content">
+                <h4 style="margin: 0 0 0.25rem 0;">Public Profile</h4>
+                <p style="margin: 0; color: #666;">Your profile is visible to everyone, including companies and other students</p>
+              </div>
+            </label>
+            <label class="radio-option" style="display: flex; gap: 1rem; padding: 1rem; border: 2px solid #E0E0E0; border-radius: 8px; cursor: pointer;">
+              <input type="radio" name="visibility" value="recruiter" />
+              <div class="radio-content">
+                <h4 style="margin: 0 0 0.25rem 0;">Recruiter Only</h4>
+                <p style="margin: 0; color: #666;">Only verified recruiters can view your complete profile</p>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Picture and Basic Info -->
+      <div class="card mb-lg">
+        <div class="card-header">
+          <h3 class="card-title">Profile Picture & Basic Information</h3>
+        </div>
+        <div class="card-content">
+          <div class="profile-picture-section" style="display: flex; gap: 2rem; margin-bottom: 2rem; align-items: center;">
+            <div class="profile-avatar-large" style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; background: #E0E0E0; display: flex; align-items: center; justify-content: center;">
+              <svg style="width: 60px; height: 60px; color: #999;" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="profile-upload-controls">
+              <button class="btn btn-primary" style="margin-bottom: 0.5rem;">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Upload Photo
+              </button>
+              <p class="upload-hint" style="font-size: 0.875rem; color: #666; margin: 0;">JPG, PNG or GIF. Max size 5MB</p>
+            </div>
+          </div>
+
+          <div class="profile-form">
+            <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+              <div class="form-group">
+                <label for="fullName" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Full Name *</label>
+                <input type="text" id="fullName" class="form-input" placeholder="Enter your full name" />
+              </div>
+
+              <div class="form-group">
+                <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email Address *</label>
+                <input type="email" id="email" class="form-input" placeholder="your.email@example.com" />
+              </div>
+
+              <div class="form-group">
+                <label for="phone" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Phone Number</label>
+                <input type="tel" id="phone" class="form-input" placeholder="+84 123 456 789" />
+              </div>
+
+              <div class="form-group">
+                <label for="location" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Location</label>
+                <input type="text" id="location" class="form-input" placeholder="City, Country" />
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <label for="bio" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Professional Summary</label>
+              <textarea id="bio" class="form-input" rows="4" placeholder="Tell us about your background, skills, and career goals..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills Section -->
+      <div class="card mb-lg">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 class="card-title">Skills</h3>
+          <button class="btn btn-primary" onclick="addSkill()" style="padding: 0.5rem 1rem;">
+            <span style="font-size: 1.2rem; margin-right: 0.25rem;">+</span> Add Skill
+          </button>
+        </div>
+        <div class="card-content">
+          <div id="skills-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            <p id="no-skills" style="width: 100%; text-align: center; color: #999; font-style: italic; padding: 2rem 0;">No skills added yet. Add your technical skills.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Education Section -->
+      <div class="card mb-lg">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 class="card-title">Education</h3>
+          <button class="btn btn-primary" onclick="addEducation()" style="padding: 0.5rem 1rem;">
+            <span style="font-size: 1.2rem; margin-right: 0.25rem;">+</span> Add Education
+          </button>
+        </div>
+        <div class="card-content">
+          <div id="education-list">
+            <p id="no-education" style="text-align: center; color: #999; font-style: italic; padding: 2rem 0;">No education added yet. Add your academic background.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Experience Section -->
+      <div class="card mb-lg">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 class="card-title">Experience</h3>
+          <button class="btn btn-primary" onclick="addExperience()" style="padding: 0.5rem 1rem;">
+            <span style="font-size: 1.2rem; margin-right: 0.25rem;">+</span> Add Experience
+          </button>
+        </div>
+        <div class="card-content">
+          <div id="experience-list">
+            <p id="no-experience" style="text-align: center; color: #999; font-style: italic; padding: 2rem 0;">No experience added yet. Add your work history.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Links & Portfolio -->
+      <div class="card mb-lg">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 class="card-title">Links & Portfolio</h3>
+          <button class="btn btn-primary" onclick="addLink()" style="padding: 0.5rem 1rem;">
+            <span style="font-size: 1.2rem; margin-right: 0.25rem;">+</span> Add Link
+          </button>
+        </div>
+        <div class="card-content">
+          <div id="links-list">
+            <p id="no-links" style="text-align: center; color: #999; font-style: italic; padding: 2rem 0;">No links added yet. Add your GitHub, LinkedIn, Portfolio or other professional links.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resume Upload -->
+      <div class="card mb-lg">
+        <div class="card-header">
+          <h3 class="card-title">Resume / CV</h3>
+        </div>
+        <div class="card-content">
+          <div class="resume-upload" style="padding: 2rem; border: 2px dashed #E0E0E0; border-radius: 8px; text-align: center;">
+            <svg style="width: 48px; height: 48px; color: #999; margin: 0 auto 1rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="14 2 14 8 20 8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h4 style="margin: 0 0 0.5rem 0;">Upload your resume</h4>
+            <p style="margin: 0 0 1rem 0; color: #666;">PDF, DOC or DOCX. Max size 10MB</p>
+            <button class="btn btn-primary">Choose File</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save Profile Button -->
+      <div style="display: flex; justify-content: center; padding: 2rem 0;">
+        <button class="btn btn-primary" onclick="saveProfile()" style="padding: 0.75rem 3rem; font-size: 1.1rem;">
+          Save Profile
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-grid">
+        <div class="footer-section">
+          <div class="footer-brand">
+            <svg class="icon icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
+            </svg>
+            <span class="brand-text">Moon<span class="brand-accent">*</span></span>
+          </div>
+          <p class="footer-description">Connecting IT students with their dream careers.</p>
+        </div>
+
+        <div class="footer-section">
+          <h4 class="footer-heading">Platform</h4>
+          <ul class="footer-links">
+            <li><a href="jobs.html">Browse Jobs</a></li>
+            <li><a href="#">For Students</a></li>
+            <li><a href="#">For Companies</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4 class="footer-heading">Company</h4>
+          <ul class="footer-links">
+            <li><a href="#">About Us</a></li>
+            <li><a href="blogs.html">Blog</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4 class="footer-heading">Legal</h4>
+          <ul class="footer-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-copyright">&copy; 2025 Moon*. All rights reserved.</p>
+        <div class="footer-social">
+          <a href="#" class="social-link" aria-label="Facebook">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+            </svg>
+          </a>
+          <a href="#" class="social-link" aria-label="Twitter">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path>
+            </svg>
+          </a>
+          <a href="#" class="social-link" aria-label="LinkedIn">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path>
+              <circle cx="4" cy="4" r="2"></circle>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="../../js/site.js"></script>
+  <script src="../../js/modules/profile-edit.js"></script>
+  <script src="../../js/modules/profile-loader.js"></script>
+  <script src="../../js/profile.js"></script>
+</body>
+</html>
