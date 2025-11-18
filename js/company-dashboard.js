@@ -84,64 +84,43 @@ function loadDashboardStats() {
 	const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 	const userId = currentUser.userid || currentUser.userId || currentUser.id;
 
-	// Load jobs data
-	fetch('../../assets/data/jobs.json')
-		.then((response) => response.json())
-		.then((jobsData) => {
-			// Count active jobs for this company
-			const activeJobs = jobsData.filter(
-				(job) => job.companyId === userId
-			).length;
-			const activeJobsElement = document.getElementById('activeJobsCount');
-			if (activeJobsElement) {
-				activeJobsElement.textContent = activeJobs;
-			}
+	if (!userId) {
+		console.warn('No user ID found');
+		return;
+	}
 
-			// Load applications to count applicants
-			return fetch('../../assets/data/applications.json');
-		})
-		.then((response) => response.json())
-		.then((applicationsData) => {
-			// Get all job IDs for this company
-			return fetch('../../assets/data/jobs.json')
-				.then((res) => res.json())
-				.then((jobsData) => {
-					const companyJobIds = jobsData
-						.filter((job) => job.companyId === userId)
-						.map((job) => job.id);
+	// Get company's jobs from localStorage instead of JSON files
+	const companyJobsKey = `companyJobs_${userId}`;
+	const companyJobs = JSON.parse(localStorage.getItem(companyJobsKey) || '[]');
 
-					// Count total applicants for company's jobs
-					const totalApplicants = applicationsData.filter((app) =>
-						companyJobIds.includes(app.jobId)
-					).length;
+	// Get company's applications from localStorage
+	const applicationsKey = `applications_${userId}`;
+	const applications = JSON.parse(localStorage.getItem(applicationsKey) || '[]');
 
-					// Count new applicants (applications in last 7 days)
-					const sevenDaysAgo = new Date();
-					sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-					const newApplicants = applicationsData.filter((app) => {
-						if (!companyJobIds.includes(app.jobId)) return false;
-						const appDate = new Date(app.appliedDate);
-						return appDate >= sevenDaysAgo;
-					}).length;
+	// Update active jobs count
+	const activeJobsElement = document.getElementById('activeJobsCount');
+	if (activeJobsElement) {
+		activeJobsElement.textContent = companyJobs.length;
+	}
 
-					// Update UI
-					const totalApplicantsElement = document.getElementById(
-						'totalApplicantsCount'
-					);
-					const newApplicantsElement =
-						document.getElementById('newApplicantsCount');
+	// Update total applicants count
+	const totalApplicantsElement = document.getElementById('totalApplicantsCount');
+	if (totalApplicantsElement) {
+		totalApplicantsElement.textContent = applications.length;
+	}
 
-					if (totalApplicantsElement) {
-						totalApplicantsElement.textContent = totalApplicants;
-					}
-					if (newApplicantsElement) {
-						newApplicantsElement.textContent = newApplicants;
-					}
-				});
-		})
-		.catch((error) => {
-			console.error('Error loading dashboard stats:', error);
-		});
+	// Count new applicants (applications in last 7 days)
+	const sevenDaysAgo = new Date();
+	sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+	const newApplicants = applications.filter((app) => {
+		const appDate = new Date(app.submittedAt || app.appliedAt);
+		return appDate >= sevenDaysAgo;
+	}).length;
+
+	const newApplicantsElement = document.getElementById('newApplicantsCount');
+	if (newApplicantsElement) {
+		newApplicantsElement.textContent = newApplicants;
+	}
 }
 
 // Initialize user dropdown toggle
@@ -281,35 +260,45 @@ async function loadCompanyDashboard() {
 		console.log('Applications for this company:', applications.length);
 
 		// Update stats
-		const activeJobsCount = companyJobs.filter(
-			(job) => job.status === 'Active'
-		).length;
-		document.querySelector('.card:nth-child(1) h2').textContent =
-			activeJobsCount;
+		const activeJobsCount = companyJobs.length; // All posted jobs are considered active
+		const activeJobsElement = document.getElementById('activeJobsCount');
+		if (activeJobsElement) {
+			activeJobsElement.textContent = activeJobsCount;
+		}
 
 		// Update total applicants count
 		const totalApplicantsCount = applications.length;
-		document.querySelector('.card:nth-child(2) h2').textContent =
-			totalApplicantsCount;
+		const totalApplicantsElement = document.getElementById('totalApplicantsCount');
+		if (totalApplicantsElement) {
+			totalApplicantsElement.textContent = totalApplicantsCount;
+		}
 
 		// Update new applicants count (last 7 days)
 		const newApplicantsCount = applications.filter((app) => {
-			const submittedDate = new Date(app.appliedAt);
+			const submittedDate = new Date(app.submittedAt || app.appliedAt);
 			const daysSince = Math.floor(
 				(new Date() - submittedDate) / (1000 * 60 * 60 * 24)
 			);
 			return daysSince <= 7;
 		}).length;
-		document.querySelector('.card:nth-child(3) h2').textContent =
-			newApplicantsCount;
+		const newApplicantsElement = document.getElementById('newApplicantsCount');
+		if (newApplicantsElement) {
+			newApplicantsElement.textContent = newApplicantsCount;
+		}
 
-		// Display jobs (limit to 10 most recent)
-		const recentJobs = companyJobs
-			.sort((a, b) => new Date(b.postedAt) - new Date(a.postedAt))
-			.slice(0, 10);
+    // Display jobs (limit to 10 most recent)
+    const recentJobs = companyJobs
+      .sort((a, b) => new Date(b.postedAt || b.createdAt) - new Date(a.postedAt || a.createdAt))
+      .slice(0, 10);
 
-		if (recentJobs.length === 0) {
-			document.getElementById('active-jobs').innerHTML = `
+    const activeJobsContainer = document.getElementById('active-jobs');
+    if (!activeJobsContainer) {
+      console.error('Active jobs container not found');
+      return;
+    }
+
+    if (recentJobs.length === 0) {
+      activeJobsContainer.innerHTML = `
         <div style="text-align: center; padding: 3rem 1rem; color: #999;">
           <svg style="width: 64px; height: 64px; margin-bottom: 1rem; opacity: 0.3;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -319,60 +308,64 @@ async function loadCompanyDashboard() {
           <p style="font-size: 0.9rem; margin: 0.5rem 0 0 0;">Click "Post New Job" to create your first job listing</p>
         </div>
       `;
-		} else {
-			document.getElementById('active-jobs').innerHTML = recentJobs
-				.map((job, idx) => {
-					// Count applicants for this job
-					const applicants = applications.filter((app) => app.jobId === job.id);
-					const newApplicants = applicants.filter((app) => {
-						const submittedDate = new Date(app.submittedAt);
-						const daysSince = Math.floor(
-							(new Date() - submittedDate) / (1000 * 60 * 60 * 24)
-						);
-						return daysSince <= 7;
-					});
+    } else {
+      activeJobsContainer.innerHTML = recentJobs
+        .map((job) => {
+          // Count applicants for this job
+          const applicants = applications.filter((app) => app.jobId == job.id);
+          const newApplicants = applicants.filter((app) => {
+            const submittedDate = new Date(app.submittedAt || app.appliedAt);
+            const daysSince = Math.floor(
+              (new Date() - submittedDate) / (1000 * 60 * 60 * 24)
+            );
+            return daysSince <= 7;
+          });
 
-					const daysAgo = Math.floor(
-						(new Date() - new Date(job.postedAt)) / (1000 * 60 * 60 * 24)
-					);
-					const postedText =
-						daysAgo === 0
-							? 'today'
-							: daysAgo === 1
-							? '1 day ago'
-							: daysAgo < 7
-							? `${daysAgo} days ago`
-							: `${Math.floor(daysAgo / 7)} week${
-									Math.floor(daysAgo / 7) > 1 ? 's' : ''
-							  } ago`;
+          const daysAgo = Math.floor(
+            (new Date() - new Date(job.postedAt || job.createdAt)) / (1000 * 60 * 60 * 24)
+          );
+          const postedText =
+            daysAgo === 0
+              ? 'today'
+              : daysAgo === 1
+              ? '1 day ago'
+              : daysAgo < 7
+              ? `${daysAgo} days ago`
+              : `${Math.floor(daysAgo / 7)} week${
+                  Math.floor(daysAgo / 7) > 1 ? 's' : ''
+                } ago`;
 
-					// Mock views (in production would be tracked)
-					const views = Math.floor(Math.random() * 300) + 100;
+          // Mock views (in production would be tracked)
+          const views = Math.floor(Math.random() * 300) + 100;
+          
+          // Get job location - handle both object and string formats
+          let locationText = 'Location not specified';
+          if (job.location) {
+            if (typeof job.location === 'object' && job.location.city) {
+              locationText = job.location.city;
+            } else if (typeof job.location === 'string') {
+              locationText = job.location;
+            }
+          }
 
-					return `
-          <div class="card" style="border: 1px solid #ECEFF1; padding: 1.5rem;">
+          return `
+          <div style="border: 1px solid #ECEFF1; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
               <div>
-                <h4 style="color: #263238; margin: 0 0 0.25rem 0;">${
-									job.title
-								}</h4>
-                <p style="color: #78909C; margin: 0; font-size: 0.875rem;">${
-									job.position
-								} • ${job.location}</p>
+                <h4 style="color: #263238; margin: 0 0 0.25rem 0;">${job.title || 'Untitled Job'}</h4>
+                <p style="color: #78909C; margin: 0; font-size: 0.875rem;">${job.category || 'Position'} • ${locationText}</p>
                 <p style="color: #78909C; margin: 0.25rem 0 0 0; font-size: 0.875rem;">Posted ${postedText}</p>
               </div>
               ${
-								newApplicants.length > 0
-									? `<span class="badge badge-primary">${newApplicants.length} New</span>`
-									: ''
-							}
+                newApplicants.length > 0
+                  ? `<span style="background: #00bcd4; color: white; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">${newApplicants.length} New</span>`
+                  : ''
+              }
             </div>
-            <div class="grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
               <div>
                 <p style="color: #78909C; margin: 0; font-size: 0.875rem;">Applicants</p>
-                <p style="color: #263238; margin: 0; font-weight: 600;">${
-									applicants.length
-								}</p>
+                <p style="color: #263238; margin: 0; font-weight: 600;">${applicants.length}</p>
               </div>
               <div>
                 <p style="color: #78909C; margin: 0; font-size: 0.875rem;">Views</p>
@@ -380,36 +373,40 @@ async function loadCompanyDashboard() {
               </div>
               <div>
                 <p style="color: #78909C; margin: 0; font-size: 0.875rem;">Status</p>
-                <span class="badge badge-secondary">${job.status}</span>
+                <span style="background: #E8F5E9; color: #388E3C; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Active</span>
               </div>
             </div>
             <div style="display: flex; gap: 0.5rem;">
-              <button class="btn btn-outline" style="flex: 1;">View Applicants</button>
-              <button class="btn btn-outline" onclick="openEditJobModal('${
-								job.id
-							}')" style="flex: 1;">Edit Job</button>
+              <button onclick="window.location.href='company-applicants.html'" style="flex: 1; padding: 0.5rem 1rem; border: 1px solid #00bcd4; background: white; color: #00bcd4; border-radius: 4px; cursor: pointer;">View Applicants</button>
+              <button onclick="openEditJobModal('${job.id}')" style="flex: 1; padding: 0.5rem 1rem; border: 1px solid #00bcd4; background: white; color: #00bcd4; border-radius: 4px; cursor: pointer;">Edit Job</button>
             </div>
           </div>
         `;
-				})
-				.join('');
-		}
-
-		// Get recent applicants (first 5 most recent)
+        })
+        .join('');
+    }
+    
+    // Get recent applicants (first 5 most recent)
 		const recentApps = applications
-			.sort((a, b) => new Date(b.appliedAt) - new Date(a.appliedAt))
+			.sort((a, b) => new Date(b.submittedAt || b.appliedAt) - new Date(a.submittedAt || a.appliedAt))
 			.slice(0, 5);
 
+		const recentApplicantsContainer = document.getElementById('recent-applicants');
+		if (!recentApplicantsContainer) {
+			console.error('Recent applicants container not found');
+			return;
+		}
+
 		if (recentApps.length === 0) {
-			document.getElementById('recent-applicants').innerHTML = `
+			recentApplicantsContainer.innerHTML = `
         <div style="text-align: center; padding: 2rem 1rem; color: #999;">
           <p style="font-size: 0.9rem; margin: 0;">No applicants yet</p>
         </div>
       `;
 		} else {
-			document.getElementById('recent-applicants').innerHTML = recentApps
+			recentApplicantsContainer.innerHTML = recentApps
 				.map((app) => {
-					const appliedDate = new Date(app.appliedAt);
+					const appliedDate = new Date(app.submittedAt || app.appliedAt);
 					const hoursAgo = Math.floor(
 						(new Date() - appliedDate) / (1000 * 60 * 60)
 					);
@@ -422,11 +419,10 @@ async function loadCompanyDashboard() {
 									Math.floor(hoursAgo / 24) > 1 ? 's' : ''
 							  } ago`;
 
-					// Mock match score (in production would be calculated)
-					const matchScore = Math.floor(Math.random() * 20) + 80;
-
 					// Status badge configuration
 					const statusConfig = {
+						pending: { bg: '#FFF3E0', color: '#F57C00', text: 'Under Review' },
+						submitted: { bg: '#FFF3E0', color: '#F57C00', text: 'Under Review' },
 						Pending: { bg: '#FFF3E0', color: '#F57C00', text: 'Under Review' },
 						Reviewing: { bg: '#E3F2FD', color: '#1976D2', text: 'Reviewing' },
 						Interview: { bg: '#E8F5E9', color: '#388E3C', text: 'Interview' },
@@ -436,22 +432,21 @@ async function loadCompanyDashboard() {
 
 					const statusInfo =
 						statusConfig[app.status] || statusConfig['Pending'];
+						
+					// Get job title from the job data
+					const job = companyJobs.find(j => j.id == app.jobId);
+					const jobTitle = job ? job.title : (app.jobTitle || 'Unknown Job');
+
+					// Safely get application ID
+					const appIdDisplay = (app.applicationId || app.applicantId || 'N/A').toString().slice(-4);
 
 					return `
-          <div style="padding: 1rem; border: 1px solid #ECEFF1; border-radius: 0.5rem;">
+          <div style="padding: 1rem; border: 1px solid #ECEFF1; border-radius: 8px; margin-bottom: 1rem;">
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
-              <h4 style="color: #263238; margin: 0; font-size: 1rem;">Applicant #${app.applicantId.slice(
-								-4
-							)}</h4>
-              <span class="badge" style="background: ${statusInfo.bg}; color: ${
-						statusInfo.color
-					}; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">${
-						statusInfo.text
-					}</span>
+              <h4 style="color: #263238; margin: 0; font-size: 1rem;">Applicant #${appIdDisplay}</h4>
+              <span style="background: ${statusInfo.bg}; color: ${statusInfo.color}; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">${statusInfo.text}</span>
             </div>
-            <p style="color: #78909C; margin: 0 0 0.5rem 0; font-size: 0.875rem;"><strong>${
-							app.jobTitle
-						}</strong></p>
+            <p style="color: #78909C; margin: 0 0 0.5rem 0; font-size: 0.875rem;"><strong>${jobTitle}</strong></p>
             <p style="color: #78909C; margin: 0; font-size: 0.75rem;">Applied ${timeText}</p>
           </div>
         `;
