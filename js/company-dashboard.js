@@ -155,21 +155,9 @@ function initUserDropdown() {
 
 // Logout function
 function logout() {
-	window.notify
-		.confirm('Bạn có chắc chắn muốn đăng xuất?', 'Xác nhận đăng xuất', {
-			confirmText: 'Đăng xuất',
-			cancelText: 'Hủy',
-		})
-		.then((confirmed) => {
-			if (confirmed) {
-				localStorage.removeItem('currentUser');
-				localStorage.removeItem('isLoggedIn');
-				window.notify.success('Đăng xuất thành công!');
-				setTimeout(() => {
-					window.location.href = '../../index.html';
-				}, 1000);
-			}
-		});
+	localStorage.removeItem('currentUser');
+	localStorage.removeItem('isLoggedIn');
+	window.location.href = '../../index.html';
 }
 
 // Update applicant status
